@@ -59,6 +59,10 @@ export default {
 }
 </script>
 
+<style lang="sass">
+  @import "~bulma"
+</style>
+
 <style scoped>
   .yscroll {
     overflow-x: hidden;
