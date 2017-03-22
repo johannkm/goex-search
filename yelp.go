@@ -47,6 +47,10 @@ type Business struct {
     Alias string `json:"alias"`
     Title string `json:"title"`
   } `json:"categories"`
+  Coordinates struct {
+    Latitude float64 `json:"latitude"`
+    Longitude float64 `json:"longitude"`
+  } `json:"coordinates"`
 }
 
 type SearchResp struct {
