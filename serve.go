@@ -1,62 +1,53 @@
 package main
 
-import(
-  // "strconv"
-  "net/url"
-  "github.com/labstack/echo"
-  "github.com/labstack/echo/middleware"
-  "net/http"
-  "encoding/json"
-  // "fmt"
+import (
+	"encoding/json"
+	"github.com/labstack/echo"
+	"github.com/labstack/echo/middleware"
+	"net/http"
+	"net/url"
 )
 
-var token *ApiToken
-
 type SearchForm struct {
-  Term string `json:"term"`
-  Location string `json:"location"`
+	Term     string `json:"term"`
+	Location string `json:"location"`
 }
 
-func get(c echo.Context)(err error){
+func Serve() {
 
-  var u = new(SearchForm)
+	e := echo.New()
+	e.File("/", "index.html")
+	e.Static("/dist", "dist")
+	e.Static("/static", "static")
+	e.POST("/places", post)
 
-  if err = c.Bind(u); err != nil {
-    return
-  }
+	e.Use(middleware.CORS()) // TODO: remove for production
 
-  form := url.Values{}
-  form.Add("location", u.Location)
-
-  res, err := YelpSearch(form.Encode(), token)
-  if err != nil {
-    panic(err)
-  }
-
-  out, err := json.Marshal(res)
-  if err != nil {
-      panic (err)
-  }
-
-  return c.String(http.StatusOK, string(out))
+	e.Logger.Fatal(e.Start(":8000"))
 }
 
-func main() {
+func post(c echo.Context) (err error) {
 
-  var err error
-  token, err = GetApiToken()
-  if err != nil {
-    panic(err)
-  }
+	var u = new(SearchForm)
 
-  e := echo.New()
-  e.File("/", "index.html")
-  e.Static("/dist", "dist")
-  e.Static("/static", "static")
-  e.POST("/places", get)
-  // e.Use(middleware.Logger())
-	// e.Use(middleware.Recover())
-  e.Use(middleware.CORS()) // TODO: remove for production
+	if err = c.Bind(u); err != nil {
+		return
+	}
 
-  e.Logger.Fatal( e.Start(":8000") )
+	form := url.Values{}
+	form.Add("location", u.Location)
+	form.Add("term", u.Term)
+
+
+	res, err := YelpSearch(form.Encode(), yelpToken)
+	if err != nil {
+		panic(err)
+	}
+
+	out, err := json.Marshal(res)
+	if err != nil {
+		panic(err)
+	}
+
+	return c.String(http.StatusOK, string(out))
 }
