@@ -38,7 +38,6 @@ func post(c echo.Context) (err error) {
 	form.Add("location", u.Location)
 	form.Add("term", u.Term)
 
-
 	res, err := YelpSearch(form.Encode(), yelpToken)
 	if err != nil {
 		panic(err)

@@ -19,6 +19,13 @@ type ApiKeys struct {
 	GoogleMaps struct {
 		Key string `json:"key"`
 	} `json:"google-maps"`
+	ParallelDots struct {
+		Key string `json:"key"`
+	} `json:"paralleldots"`
+	Watson struct {
+		Username string `json: password`
+		Password string `json:"password"`
+	} `json:"watson"`
 }
 
 func main() {
@@ -35,7 +42,7 @@ func main() {
 
 	// Serve()
 	// RunTraining( conf )
-	ProcessText()
+	ProcessText( conf )
 
 }
 
