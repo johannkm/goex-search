@@ -42,7 +42,7 @@ func main() {
 
 	// Serve()
 	// RunTraining( conf )
-	ProcessText( conf )
+	ProcessText(conf)
 
 }
 
