@@ -50,9 +50,23 @@ type Business struct {
 	} `json:"analysis"`
 }
 
-type SearchResp struct {
+type YelpSearchResp struct {
 	Total      int64      `json:"total"`
 	Businesses []Business `json:"businesses"`
+}
+
+type YelpReviewSearchResp struct {
+	Total int32 `json:"total"`
+	Reviews []struct{
+		Text string `json:"text"`
+		Url string `json:"url"`
+		Rating int32 `json:"rating"`
+		TimeCreated string `json:"time_created"`
+		User struct{
+			Name string `json:"name"`
+			ImageUrl string `json:"image_url"`
+		} `json:"user"`
+	} `json:"reviews"`
 }
 
 func GetApiToken(conf *ApiKeys) (*ApiToken, error) {
@@ -109,7 +123,7 @@ func MakeGet(url string, cred *ApiToken) (*http.Response, error) {
 
 }
 
-func YelpSearch(args string, cred *ApiToken) (*SearchResp, error) {
+func YelpSearch(args string, cred *ApiToken) (*YelpSearchResp, error) {
 
 	addr := "https://api.yelp.com/v3/businesses/search" + "?" + args
 	resp, err := MakeGet(addr, cred)
@@ -121,9 +135,27 @@ func YelpSearch(args string, cred *ApiToken) (*SearchResp, error) {
 		return nil, err
 	}
 
-	var r = new(SearchResp)
+	var r = new(YelpSearchResp)
 	err_ := json.Unmarshal([]byte(bodyBytes), &r)
 
 	return r, err_
 
+}
+
+func YelpReviewSearch(id string, cred *ApiToken) (*YelpReviewSearchResp, error) {
+	addr := "https://api.yelp.com/v3/businesses/" + id + "/reviews"
+
+	resp, err := MakeGet(addr, cred)
+	if err != nil {
+		return nil, err
+	}
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var r = new(YelpReviewSearchResp)
+	err_ := json.Unmarshal([]byte(bodyBytes), &r)
+
+	return r, err_
 }

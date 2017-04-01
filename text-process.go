@@ -8,12 +8,15 @@ import (
 	"net/http"
 	"os"
 	"strings"
+
+	textapi "github.com/AYLIEN/aylien_textapi_go"
 )
 
 const (
 	ParallelDotsUrl = "https://apis.paralleldots.com/emotion"
 )
 
+var TextApiClient *textapi.Client
 var Lexicons map[string]*[10]bool
 
 type WatsonResponse struct {
@@ -30,6 +33,42 @@ type WatsonResponse struct {
 	} `json:"document_tone"`
 }
 
+type SummaryResponse struct {
+	Title string `json:"title"`
+	Text string `json:"text"`
+}
+
+func Summarize(reviews string, creds *ApiKeys)(resp *SummaryResponse, err error){
+
+	if TextApiClient == nil {
+		auth := textapi.Auth{creds.TextApi.AppId, creds.TextApi.Key }
+		TextApiClient, err = textapi.NewClient(auth, true)
+		if err != nil {
+				panic(err)
+		}
+	}
+	fmt.Println("incoming review text: "+reviews)
+	summarizeParams := &textapi.SummarizeParams{
+		Title: "Review",
+		Text: reviews,
+		NumberOfSentences: 1,
+	}
+	summary, err := TextApiClient.Summarize(summarizeParams)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("%v\n", TextApiClient.RateLimits)
+
+	resp = new(SummaryResponse)
+	summaryText := ""
+	for x:= range summary.Sentences {
+		summaryText = summaryText + summary.Sentences[x]
+	}
+	resp.Text = summaryText
+	fmt.Println("outgoing summary"+summaryText)
+	return resp, nil
+}
+
 func ProcessText(creds *ApiKeys) {
 
 	ParseLexicon()
@@ -41,17 +80,19 @@ func ProcessText(creds *ApiKeys) {
 	//   fmt.Println()
 	// }
 
-	resp, err := AnalyzeTone(creds, "")
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(resp)
+	// resp, err := AnalyzeTone(creds, "")
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// fmt.Println(resp)
+	//
+	// res, err := FindAdjective(resp, Lexicons)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// fmt.Println(res)
+	//
 
-	res, err := FindAdjective(resp, Lexicons)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(res)
 
 }
 

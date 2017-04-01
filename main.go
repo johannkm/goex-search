@@ -6,6 +6,7 @@ import (
 )
 
 var yelpToken *ApiToken
+var apiKeys *ApiKeys
 
 const (
 	Conf_Path = "api-config.json"
@@ -26,6 +27,10 @@ type ApiKeys struct {
 		Username string `json: password`
 		Password string `json:"password"`
 	} `json:"watson"`
+	TextApi struct {
+		AppId string `json:"app_id"`
+		Key string `json:"key"`
+	} `json:"text-analysis"`
 }
 
 func main() {
@@ -34,15 +39,16 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	apiKeys = conf
 
 	yelpToken, err = GetApiToken(conf)
 	if err != nil {
 		panic(err)
 	}
 
-	// Serve()
+	Serve()
 	// RunTraining( conf )
-	ProcessText(conf)
+	// ProcessText(conf)
 
 }
 

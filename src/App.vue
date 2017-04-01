@@ -40,33 +40,15 @@
               </div>
             </form>
 
-
-            <!-- <input type="input" class="input" v-model="search" @input="postSearch" placeholder="Search"></input> -->
-
             <p v-if="noResponse">No matching results</p>
 
             <table class="table is-striped yscroll">
               <tr v-for="b in response">
-                <article class="resp-row media">
-                  <figure class="media-left">
-                    <p class="image is-64x64">
-                      <img class="thumb" :src="b.image_url">
-                    </p>
-                  </figure>
-                  <div class="media-content">
-                    <div class="content">
-                      <p>
-                        <strong>{{b.name}}</strong> <small>{{b.categories[0].title}}</small>
-                        <br>
-                      </p>
-                      <p>
-                        <yelp-stars :rating="b.rating" :total="b.review_count"></yelp-stars>
-                      </p>
-                    </div>
-                  </div>
-                </article>
+                <business-box :businessData="b"/>
+                <hr>
               </tr>
             </table>
+
           </div>
         </div>
     </div>
@@ -75,19 +57,18 @@
 
 <script>
 import axios from 'axios'
-var debounce = require('lodash/debounce')
-
-import YelpStars from './components/YelpStars.vue'
+// var debounce = require('lodash/debounce')
+import BusinessBox from './Components/BusinessBox.vue'
 
 export default {
   name: 'app',
   components: {
-    YelpStars
+    BusinessBox
   },
   data () {
     return {
       term: '',
-      location: 'Current location',
+      location: 'DC',
       response: [],
       noResponse: false,
       searching: false
@@ -113,7 +94,7 @@ export default {
       })
         .then(function(response){
           console.log(response.data)
-          vm.response = response.data.businesses
+          vm.response = response.data.businesses.slice(0,2)
           if(vm.response == null || vm.response.length==0){
             vm.noResponse = true
           }
@@ -150,19 +131,13 @@ export default {
     color: #fff;
   }
 
-  .resp-row {
-    margin: 5px;
-  }
-
   .yscroll {
     overflow-x: hidden;
     overflow-y: scroll;
   }
-  .thumb {
-    display: inline-block;
-    width: 64px;
-    height: 64px;
-    background-position: center center;
-    background-size: cover;
+
+  tr:hover {
+    background-color: transparent!important;
   }
+
 </style>
