@@ -1,20 +1,20 @@
 <template>
   <div id="app">
-    <nav class="dark-theme">
-      <div class="nav-left">
-        <a class="nav-item" href="/">
-          goex
-        </a>
-      </div>
-    </nav>
-    <div class="container main-content">
 
+    <div class="dark-theme">
+      <div class="container main-content">
+        <nav-bar/>
+      </div>
+    </div>
+
+    <div class="content-form">
+      <div class="container main-content">
         <form class="search-form" v-on:submit.prevent="postSearch">
           <div class="field">
             <div class="columns is-gapless">
               <div class="column">
                 <p class="control has-icon">
-                  <input class="input" type="input" placeholder="Search" v-model="term">
+                  <input class="input" type="input" placeholder="Search (Optional)" v-model="term">
                   <span class="icon is-small">
                     <i class="fa fa-search"></i>
                   </span>
@@ -28,7 +28,7 @@
                   </span>
                 </p>
               </div>
-              <div class="column is-1">
+              <div class="column is-narrow">
                 <p class="control">
                   <button type="submit" class="button is-primary" :class="{'is-loading': searching}">Go</button>
 
@@ -37,13 +37,21 @@
             </div>
           </div>
         </form>
+      </div>
+    </div>
+
+    <div class="container main-content">
 
         <p v-if="noResponse">No matching results</p>
 
         <table class="table is-striped yscroll">
+          <loading-icon :active="searching" :isSmall="false"/>
+
           <tr v-for="b in response">
-            <business-box :businessData="b"/>
-            <hr>
+            <div class="table-row">
+              <business-box :businessData="b"/>
+              <hr>
+            </div>
           </tr>
         </table>
 
@@ -56,11 +64,15 @@
 import axios from 'axios'
 // var debounce = require('lodash/debounce')
 import BusinessBox from './Components/BusinessBox.vue'
+import LoadingIcon from './Components/LoadingIcon.vue'
+import NavBar from './Components/NavBar.vue'
 
 export default {
   name: 'app',
   components: {
-    BusinessBox
+    BusinessBox,
+    LoadingIcon,
+    NavBar
   },
   data () {
     return {
@@ -75,6 +87,7 @@ export default {
     postSearch: function() {
       this.noResponse = false
       this.searching = true
+      this.response = []
       let location = this.location
       if(this.location == 'Current location'){
         if(navigator.geolocation){
@@ -91,9 +104,11 @@ export default {
       })
         .then(function(response){
           console.log(response.data)
-          vm.response = response.data.businesses.slice(0,2)
-          if(vm.response == null || vm.response.length==0){
+          if(response.data.businesses == null || response.data.businesses.length==0){
             vm.noResponse = true
+            vm.response = []
+          } else {
+            vm.response = response.data.businesses.slice(0,5)
           }
           vm.searching = false
         })
@@ -113,23 +128,17 @@ export default {
 <style scoped>
 
   .main-content {
-    max-width: 1200px;
+    max-width: 1000px;
+    padding-right: 5px;
+    padding-left: 5px;
   }
 
   .search-form {
     padding-top: 1rem;
     padding-bottom: 1rem;
   }
-
-  .dark-theme {
-    background-color: #3F3244;
-  }
-
-  .nav-item{
-    color: #fff;
-  }
-  .nav-item:hover {
-    color: #fff;
+  .content-form {
+    background-color: #F4F4F4
   }
 
   .yscroll {
@@ -137,8 +146,20 @@ export default {
     overflow-y: scroll;
   }
 
+  hr {
+    margin-bottom: 0;
+    margin-top: 12px;
+  }
+  .table-row{
+    margin-top: 20px;
+  }
+
   tr:hover {
     background-color: transparent!important;
+  }
+
+  .dark-theme {
+    background-color: #504455;
   }
 
 </style>

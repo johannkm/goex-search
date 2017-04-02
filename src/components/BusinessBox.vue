@@ -1,39 +1,41 @@
 <template>
-  <article class="resp-row media">
-    <figure class="media-left">
-      <div class="image is-64x64">
-        <div class="thumb" :style="{ backgroundImage: 'url(' + businessData.image_url + ')' }"></div>
+  <div class="busi-box">
+    <article class="resp-row media">
+      <figure class="media-left">
+        <div class="image is-64x64">
+          <div class="thumb" :style="{ backgroundImage: 'url(' + businessData.image_url + ')' }"></div>
+        </div>
+      </figure>
+      <div class="media-content">
+        <div class="content">
+            <strong>{{businessData.name}}</strong>
+            <span class="tag">
+              {{businessData.categories[0].title}}
+            </span>
+            <br>
+
+            <yelp-stars :rating="businessData.rating" :total="businessData.review_count"></yelp-stars>
+        </div>
       </div>
-    </figure>
-    <div class="media-content">
-      <div class="content">
-        <p>
-          <strong>{{businessData.name}}</strong>
-          <span class="tag">
-            {{businessData.categories[0].title}}
-          </span>
-          <br>
-        </p>
-        <p>
-          <yelp-stars :rating="businessData.rating" :total="businessData.review_count"></yelp-stars>
-        </p>
-      </div>
-      <div class="content" :class="{'is-loading, button': summaryLoading}">
-          <h3>{{title}}</h3>
-          <p>{{summary}}</p>
-      </div>
+    </article>
+    <div>
+      <loading-icon :active="summaryLoading" :isSmall="true"/>
+      <strong>{{title}}</strong>
+      {{summary}}
     </div>
-  </article>
+  </div>
 </template>
 
 <script>
 import axios from 'axios'
 import YelpStars from './YelpStars.vue'
+import LoadingIcon from './LoadingIcon.vue'
 
 export default{
   name: 'business-box',
   components: {
-    YelpStars
+    YelpStars,
+    LoadingIcon
   },
   props: ['businessData'],
   data: function() {
@@ -45,6 +47,8 @@ export default{
   },
   methods: {
     getSummary: function(data){
+      this.title = ''
+      this.summary = ''
       this.summaryLoading = true
       var vm = this
       axios.post("http://localhost:8000/summary",{ // TODO: remove for production
@@ -54,6 +58,7 @@ export default{
       })
         .then(function(response){
           console.log(response.data)
+          vm.title = response.data.keyword
           vm.summary = response.data.text
           vm.summaryLoading = false
         })
@@ -82,6 +87,10 @@ export default{
     height: 64px;
     background-position: center center;
     background-size: cover;
+}
+
+article {
+  margin-bottom: 5px;
 }
 
 </style>
