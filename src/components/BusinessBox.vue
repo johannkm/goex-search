@@ -1,26 +1,25 @@
 <template>
   <div class="busi-box">
-    <article class="resp-row media">
-      <figure class="media-left">
-        <div class="image is-64x64">
-          <div class="thumb" :style="{ backgroundImage: 'url(' + businessData.image_url + ')' }"></div>
-        </div>
-      </figure>
-      <div class="media-content">
-        <div class="content">
-            <strong>{{businessData.name}}</strong>
-            <span class="tag">
-              {{businessData.categories[0].title}}
-            </span>
-            <br>
+    <div class="image is-64x64" align="left">
+      <div class="thumb" :style="{ backgroundImage: 'url(' + businessData.image_url + ')' }"></div>
+    </div>
+    <strong>{{businessData.name}}</strong>
+    <span class="tag">
+      {{businessData.categories[0].title}}
+    </span>
+    <br>
 
-            <yelp-stars :rating="businessData.rating" :total="businessData.review_count"></yelp-stars>
-        </div>
-      </div>
-    </article>
+    <yelp-stars :rating="businessData.rating" :total="businessData.review_count"></yelp-stars>
+
+    <span class="price">
+      <span v-for="x in businessData.price">
+        $
+      </span>
+    </span>
+
     <div>
       <loading-icon :active="summaryLoading" :isSmall="true"/>
-      <strong>{{title}}</strong>
+      <strong class="keyword">{{title}}</strong>
       {{summary}}
     </div>
   </div>
@@ -89,8 +88,22 @@ export default{
     background-size: cover;
 }
 
-article {
+.image {
+  float: left;
+  margin-right: 9px;
   margin-bottom: 5px;
 }
+
+.price {
+  padding-left: 10px;
+}
+
+.keyword{
+  background-color: #E7FAF8;
+}
+
+/*article {
+  margin-bottom: 5px;
+}*/
 
 </style>

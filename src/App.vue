@@ -108,7 +108,7 @@ export default {
             vm.noResponse = true
             vm.response = []
           } else {
-            vm.response = response.data.businesses.slice(0,5)
+            vm.response = response.data.businesses.slice(0,2)
           }
           vm.searching = false
         })

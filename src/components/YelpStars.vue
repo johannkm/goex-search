@@ -1,9 +1,9 @@
 <template>
 
-<div>
+<span>
   <img :src="ratingImg"/>
   <small>{{total}} Reviews</small>
-</div>
+</span>
 
 </template>
 
