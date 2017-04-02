@@ -29,7 +29,7 @@ type ApiKeys struct {
 	} `json:"watson"`
 	TextApi struct {
 		AppId string `json:"app_id"`
-		Key string `json:"key"`
+		Key   string `json:"key"`
 	} `json:"text-analysis"`
 }
 

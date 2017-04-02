@@ -10,7 +10,7 @@ import (
 	"fmt"
 )
 
-func SearchGoogleReviews(args *SummaryForm, conf *ApiKeys)(string, error){
+func SearchGoogleReviews(args *SummaryForm, conf *ApiKeys) (string, error) {
 	c, err := maps.NewClient(maps.WithAPIKey(conf.GoogleMaps.Key))
 	if err != nil {
 		log.Fatalf("fatal error: %s", err)
@@ -18,13 +18,13 @@ func SearchGoogleReviews(args *SummaryForm, conf *ApiKeys)(string, error){
 
 	fmt.Println(args)
 
-	r:= &maps.NearbySearchRequest{
+	r := &maps.NearbySearchRequest{
 		Location: &maps.LatLng{
 			Lat: args.Latitude,
 			Lng: args.Longitude,
 		},
 		Keyword: args.Name,
-		RankBy: "distance",
+		RankBy:  "distance",
 	}
 
 	resp, err := c.NearbySearch(context.Background(), r)
@@ -32,20 +32,20 @@ func SearchGoogleReviews(args *SummaryForm, conf *ApiKeys)(string, error){
 		log.Fatalf("fatal error: %s", err)
 	}
 
-	if len(resp.Results)>0 {
+	if len(resp.Results) > 0 {
 		matchedPlace := resp.Results[0]
-		fmt.Println("looking for: "+args.Name+" found: "+matchedPlace.Name)
+		fmt.Println("looking for: " + args.Name + " found: " + matchedPlace.Name)
 
-		r2:= &maps.PlaceDetailsRequest{
+		r2 := &maps.PlaceDetailsRequest{
 			PlaceID: matchedPlace.PlaceID,
 		}
 		details, err := c.PlaceDetails(context.Background(), r2)
-		if err!=nil {
+		if err != nil {
 			panic(err)
 		}
 
 		reviews := ""
-		for x:= range details.Reviews{
+		for x := range details.Reviews {
 			reviews += details.Reviews[x].Text + " . "
 		}
 		return reviews, nil

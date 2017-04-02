@@ -56,14 +56,14 @@ type YelpSearchResp struct {
 }
 
 type YelpReviewSearchResp struct {
-	Total int32 `json:"total"`
-	Reviews []struct{
-		Text string `json:"text"`
-		Url string `json:"url"`
-		Rating int32 `json:"rating"`
+	Total   int32 `json:"total"`
+	Reviews []struct {
+		Text        string `json:"text"`
+		Url         string `json:"url"`
+		Rating      int32  `json:"rating"`
 		TimeCreated string `json:"time_created"`
-		User struct{
-			Name string `json:"name"`
+		User        struct {
+			Name     string `json:"name"`
 			ImageUrl string `json:"image_url"`
 		} `json:"user"`
 	} `json:"reviews"`

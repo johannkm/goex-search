@@ -42,18 +42,22 @@
 
     <div class="container main-content">
 
+      <div class="alert-messages">
+        <p class="start-help" v-if="begining">Search for restaurants in near a location. Goex will summarize all customer reviews.</p>
         <p v-if="noResponse">No matching results</p>
+        <p v-if="noServer">Can't reach server.</p>
+      </div>
 
-        <table class="table is-striped yscroll">
-          <loading-icon :active="searching" :isSmall="false"/>
+      <table class="table is-striped yscroll">
+        <loading-icon :active="searching" :isSmall="false"/>
 
-          <tr v-for="b in response">
-            <div class="table-row">
-              <business-box :businessData="b"/>
-              <hr>
-            </div>
-          </tr>
-        </table>
+        <tr v-for="b in response">
+          <div class="table-row">
+            <business-box :businessData="b"/>
+            <hr>
+          </div>
+        </tr>
+      </table>
 
 
     </div>
@@ -80,13 +84,17 @@ export default {
       location: 'DC',
       response: [],
       noResponse: false,
-      searching: false
+      searching: false,
+      begining: true,
+      noServer: false
     }
   },
   methods: {
     postSearch: function() {
+      this.begining = false
       this.noResponse = false
       this.searching = true
+      this.noServer = false
       this.response = []
       let location = this.location
       if(this.location == 'Current location'){
@@ -115,6 +123,7 @@ export default {
         .catch(function(error){
           console.error(error)
           vm.searching = false
+          vm.noServer = true
         })
     }
   }
@@ -160,6 +169,13 @@ export default {
 
   .dark-theme {
     background-color: #504455;
+  }
+
+  .alert-messages {
+    padding-top: 1.2rem;
+  }
+  .start-help {
+    color: #6F6F6F;
   }
 
 </style>

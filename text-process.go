@@ -34,23 +34,25 @@ type WatsonResponse struct {
 }
 
 type SummaryResponse struct {
-	Title string `json:"title"`
-	Text string `json:"text"`
+	Keyword string `json:"keyword"`
+	Text    string `json:"text"`
 }
 
-func Summarize(reviews string, creds *ApiKeys)(resp *SummaryResponse, err error){
+func Summarize(reviews string, creds *ApiKeys) (resp *SummaryResponse, err error) {
 
 	if TextApiClient == nil {
-		auth := textapi.Auth{creds.TextApi.AppId, creds.TextApi.Key }
+		auth := textapi.Auth{creds.TextApi.AppId, creds.TextApi.Key}
 		TextApiClient, err = textapi.NewClient(auth, true)
 		if err != nil {
-				panic(err)
+			panic(err)
 		}
+		ParseLexicon()
 	}
-	fmt.Println("incoming review text: "+reviews)
+
+	fmt.Println("incoming review text: " + reviews)
 	summarizeParams := &textapi.SummarizeParams{
-		Title: "Review",
-		Text: reviews,
+		Title:             "Review",
+		Text:              reviews,
 		NumberOfSentences: 1,
 	}
 	summary, err := TextApiClient.Summarize(summarizeParams)
@@ -61,38 +63,38 @@ func Summarize(reviews string, creds *ApiKeys)(resp *SummaryResponse, err error)
 
 	resp = new(SummaryResponse)
 	summaryText := ""
-	for x:= range summary.Sentences {
+	for x := range summary.Sentences {
 		summaryText = summaryText + summary.Sentences[x]
 	}
+
+	title, err := ProcessText(reviews, creds)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("title: " + title)
+
 	resp.Text = summaryText
-	fmt.Println("outgoing summary"+summaryText)
+	resp.Keyword = title
+
+	fmt.Println("outgoing summary" + summaryText)
 	return resp, nil
 }
 
-func ProcessText(creds *ApiKeys) {
+func ProcessText(text string, creds *ApiKeys) (string, error) {
 
-	ParseLexicon()
-	// for k,v := range Lexicons{
-	//   fmt.Print(k+":")
-	//   for i := range v{
-	//     fmt.Print(v[i])
-	//   }
-	//   fmt.Println()
-	// }
+	resp, err := AnalyzeTone(creds, text)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Print("incoming tone: ")
+	fmt.Println(resp)
 
-	// resp, err := AnalyzeTone(creds, "")
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// fmt.Println(resp)
-	//
-	// res, err := FindAdjective(resp, Lexicons)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// fmt.Println(res)
-	//
-
+	res, err := FindAdjective(resp, Lexicons)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("chosen word: " + res)
+	return res, nil
 
 }
 

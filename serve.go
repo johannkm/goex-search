@@ -2,11 +2,11 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"net/http"
 	"net/url"
-	"fmt"
 )
 
 type SearchForm struct {
@@ -15,8 +15,8 @@ type SearchForm struct {
 }
 
 type SummaryForm struct {
-	Name string `json:"name"`
-	Latitude float64 `json:"latitude"`
+	Name      string  `json:"name"`
+	Latitude  float64 `json:"latitude"`
 	Longitude float64 `json:"longitude"`
 }
 
@@ -75,7 +75,6 @@ func postSummary(c echo.Context) (err error) {
 	// if err!=nil{
 	// 	panic(err)
 	// }
-
 
 	//
 	// fmt.Println(reviews)
