@@ -1,11 +1,18 @@
 <template>
-  <nav class="nav dark-theme has-shadow">
+  <nav class="nav dark-theme">
     <div class="nav-left">
       <a class="nav-item title" href="/">
         Goex
       </a>
     </div>
-    <div class="nav-right nav-menu">
+
+    <span class="nav-toggle" :class="{ 'is-active' : toggled }" @click="toggle">
+      <span></span>
+      <span></span>
+      <span></span>
+    </span>
+
+    <div class="nav-right nav-menu" :class="{ 'is-active' : toggled }">
       <a class="nav-item" href="/">
         <span class="icon">
           <i class="fa fa-github"></i>
@@ -19,7 +26,17 @@
 
 <script>
 export default {
-  name: 'nav-bar'
+  name: 'nav-bar',
+  data (){
+    return{
+      toggled: false
+    }
+  },
+  methods: {
+    toggle: function(){
+      this.toggled = !this.toggled
+    }
+  }
 }
 </script>
 
@@ -36,14 +53,27 @@ export default {
   font-weight: 500;
   line-height: 1.2rem;
 }
+.nav-item:hover {
+  color: #fff;
+}
 .title{
   text-transform: uppercase;
   font-weight: 600;
   letter-spacing: .2rem;
 }
+.nav-toggle span{
+  background-color: #fff!important;
+}
+.nav-toggle{
+  background-color: #transparent;
 
-.nav-item:hover {
-  color: #fff;
+}
+.nav-toggle:hover {
+  background-color: #504455;
+}
+
+.nav-menu {
+  background-color: #504455
 }
 
 </style>
