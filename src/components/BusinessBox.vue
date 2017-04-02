@@ -1,9 +1,9 @@
 <template>
   <article class="resp-row media">
     <figure class="media-left">
-      <p class="image is-64x64">
-        <img class="thumb" :src="businessData.image_url">
-      </p>
+      <div class="image is-64x64">
+        <div class="thumb" :style="{ backgroundImage: 'url(' + businessData.image_url + ')' }"></div>
+      </div>
     </figure>
     <div class="media-content">
       <div class="content">
@@ -77,15 +77,11 @@ export default{
 <style scoped>
 
 .thumb {
-  display: inline-block;
-  width: 64px;
-  height: 64px;
-  background-position: center center;
-  background-size: cover;
-}
-
-.resp-row {
-  margin: 5px;
+    display: inline-block;
+    width: 64px;
+    height: 64px;
+    background-position: center center;
+    background-size: cover;
 }
 
 </style>

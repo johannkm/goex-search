@@ -7,50 +7,47 @@
         </a>
       </div>
     </nav>
-    <div class="main-content container">
-      <div class="columns">
-          <div class="column is-8 is-offset-2">
+    <div class="container main-content">
 
-            <form class="search-form" v-on:submit.prevent="postSearch">
-              <div class="field">
-                <div class="columns is-gapless">
-                  <div class="column">
-                    <p class="control has-icon">
-                      <input class="input" type="input" placeholder="Search" v-model="term">
-                      <span class="icon is-small">
-                        <i class="fa fa-search"></i>
-                      </span>
-                    </p>
-                  </div>
-                  <div class="column">
-                    <p class="control has-icon">
-                      <input class="input" type="input" placeholder="Place" v-model="location" required>
-                      <span class="icon is-small">
-                        <i class="fa fa-location-arrow"></i>
-                      </span>
-                    </p>
-                  </div>
-                  <div class="column is-1">
-                    <p class="control">
-                      <button type="submit" class="button is-primary" :class="{'is-loading': searching}">Go</button>
-
-                    </p>
-                  </div>
-                </div>
+        <form class="search-form" v-on:submit.prevent="postSearch">
+          <div class="field">
+            <div class="columns is-gapless">
+              <div class="column">
+                <p class="control has-icon">
+                  <input class="input" type="input" placeholder="Search" v-model="term">
+                  <span class="icon is-small">
+                    <i class="fa fa-search"></i>
+                  </span>
+                </p>
               </div>
-            </form>
+              <div class="column">
+                <p class="control has-icon">
+                  <input class="input" type="input" placeholder="Place" v-model="location" required>
+                  <span class="icon is-small">
+                    <i class="fa fa-location-arrow"></i>
+                  </span>
+                </p>
+              </div>
+              <div class="column is-1">
+                <p class="control">
+                  <button type="submit" class="button is-primary" :class="{'is-loading': searching}">Go</button>
 
-            <p v-if="noResponse">No matching results</p>
-
-            <table class="table is-striped yscroll">
-              <tr v-for="b in response">
-                <business-box :businessData="b"/>
-                <hr>
-              </tr>
-            </table>
-
+                </p>
+              </div>
+            </div>
           </div>
-        </div>
+        </form>
+
+        <p v-if="noResponse">No matching results</p>
+
+        <table class="table is-striped yscroll">
+          <tr v-for="b in response">
+            <business-box :businessData="b"/>
+            <hr>
+          </tr>
+        </table>
+
+
     </div>
   </div>
 </template>
@@ -114,6 +111,10 @@ export default {
 </style>
 
 <style scoped>
+
+  .main-content {
+    max-width: 1200px;
+  }
 
   .search-form {
     padding-top: 1rem;
