@@ -61,7 +61,7 @@ export default{
     LoadingIcon,
     ReviewBox
   },
-  props: ['businessData','key'],
+  props: ['businessData','index','currentExpanded'],
   data: function() {
     return {
       summaryLoading: 'false',
@@ -69,7 +69,6 @@ export default{
       summary: '',
       titleSentiment: '',
       reviews: [],
-      reviewsExpanded: false
     }
   },
   computed: {
@@ -81,6 +80,9 @@ export default{
         return '#F6D5A9'
       }
       return '#F4F4F4'
+    },
+    reviewsExpanded: function(){
+      return (this.index == this.currentExpanded)
     }
   },
   methods: {
@@ -109,7 +111,8 @@ export default{
         })
     },
     toggleReviews: function(){
-      this.reviewsExpanded = !this.reviewsExpanded
+      // this.reviewsExpanded = !this.reviewsExpanded
+      this.$emit('reviewsExpanded',this.index)
     }
   },
   watch: {

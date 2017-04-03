@@ -1,7 +1,7 @@
 <template>
   <nav class="nav dark-theme">
     <div class="nav-left">
-      <a class="nav-item title" href="/">
+      <a class="nav-item title" href="#">
         Goex
       </a>
     </div>

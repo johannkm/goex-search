@@ -1,157 +1,99 @@
 <template>
   <div id="app">
 
-    <div class="dark-theme">
-      <div class="container main-content">
-        <nav-bar/>
-      </div>
-    </div>
-
-    <div class="content-form">
-      <div class="container main-content">
-        <form class="search-form" v-on:submit.prevent="postSearch">
-          <div class="field">
-            <div class="columns is-gapless">
-              <div class="column">
-                <p class="control has-icon">
-                  <input class="input" type="input" placeholder="Search (Optional)" v-model="term">
-                  <span class="icon is-small">
-                    <i class="fa fa-search"></i>
-                  </span>
-                </p>
-              </div>
-              <div class="column">
-                <p class="control has-icon">
-                  <input class="input" type="input" placeholder="Place" v-model="location" required>
-                  <span class="icon is-small">
-                    <i class="fa fa-location-arrow"></i>
-                  </span>
-                </p>
-              </div>
-              <div class="column is-narrow">
-                <p class="control">
-                  <button type="submit" class="button is-primary" :class="{'is-loading': searching}">Go</button>
-
-                </p>
-              </div>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <div class="container main-content">
-
-      <div class="alert-messages">
-        <p class="start-help" v-if="begining">Search for businesses near a location. Goex will summarize customer reviews.</p>
-        <p v-if="noResponse">No matching results</p>
-        <p v-if="noServer">Can't reach server.</p>
+    <div class="content-except-footer">
+      
+      <div class="dark-theme">
+        <div class="container main-content">
+          <nav-bar/>
+        </div>
       </div>
 
-      <table class="table is-striped yscroll">
-        <loading-icon :active="searching" :isSmall="false"/>
-
-        <tr v-for="b, key in response">
-          <div class="table-row">
-            <business-box :businessData="b" :key="key"/>
-            <hr>
-          </div>
-        </tr>
-      </table>
-
+      <router-view></router-view>
 
     </div>
-    <!-- <footer class="footer">
+
+    <footer class="footer">
       <small>
         <p>
           Made with data from
-          <a class="bottom-links">
-            <span class="icon is-small">
+          <a href="https://www.yelp.com" class="bottom-links">
+            <span class="icon is-small icon-cred">
               <i class="fa fa-yelp"></i>
             </span>
             Yelp
           </a>
           &nbspand
-          <a class="bottom-links">
-            <span class="icon is-small">
+          <a href="https://developers.google.com/places/" class="bottom-links">
+            <span class="icon is-small icon-cred">
               <i class="fa fa-map-marker"></i>
             </span>
             Google Places
           </a>
         </p>
       </small>
-    </footer> -->
+    </footer>
+
   </div>
 </template>
 
 <script>
-import axios from 'axios'
-// var debounce = require('lodash/debounce')
-import BusinessBox from './Components/BusinessBox.vue'
-import LoadingIcon from './Components/LoadingIcon.vue'
 import NavBar from './Components/NavBar.vue'
 
 export default {
   name: 'app',
   components: {
-    BusinessBox,
-    LoadingIcon,
     NavBar
-  },
-  data () {
-    return {
-      term: '',
-      location: 'DC',
-      response: [],
-      noResponse: false,
-      searching: false,
-      begining: true,
-      noServer: false
-    }
-  },
-  methods: {
-    postSearch: function() {
-      this.begining = false
-      this.noResponse = false
-      this.searching = true
-      this.noServer = false
-      this.response = []
-      let location = this.location
-      if(this.location == 'Current location'){
-        if(navigator.geolocation){
-          let pos = navigator.geolocation.getCurrentPosition((pos) => {
-            location = pos.coords.latitude+','+pos.coords.longitude
-          })
-        }
-      }
-      console.log(location)
-      var vm = this
-      axios.post("http://localhost:8000/places",{ // TODO: remove for production
-        term: vm.term,
-        location: location
-      })
-        .then(function(response){
-          console.log(response.data)
-          if(response.data.businesses == null || response.data.businesses.length==0){
-            vm.noResponse = true
-            vm.response = []
-          } else {
-            vm.response = response.data.businesses.slice(0,5)
-          }
-          vm.searching = false
-        })
-        .catch(function(error){
-          console.error(error)
-          vm.searching = false
-          vm.noServer = true
-        })
-    }
   }
 }
 </script>
 
 <style lang="sass">
   @import "~bulma"
+</style>
+
+<style>
+html{
+  height: 100%;
+}
+body {
+  min-height: 100vh;
+  flex-direction: column;
+  /*flex-shrink: 0;*/
+}
+#app {
+  height: 100vh;
+  flex-direction: column;
+  display: flex;
+}
+.content-except-footer {
+  flex: 1 0 auto;
+  padding: var(--space) var(--space) 0;
+  width: 100%;
+}
+.content-except-footer::after {
+  content: '\00a0'; /* &nbsp; */
+  display: block;
+  margin-top: var(--space);
+  height: 0px;
+  visibility: hidden;
+}
+@media (--break-lg) {
+  .content-except-footer {
+    padding-top: var(--space-lg);
+  }
+  .content-except-footer::after {
+    margin-top: var(--space-lg);
+  }
+}
+
+.content-except-footer--full {
+  padding: 0;
+}
+.content-except-footer--full::after {
+  content: none;
+}
+
 </style>
 
 <style scoped>
@@ -162,55 +104,20 @@ export default {
     padding-left: 5px;
   }
 
-  .search-form {
-    padding-top: 1rem;
-    padding-bottom: 1rem;
-  }
-  .content-form {
-    background-color: #F4F4F4
-  }
-
-  .yscroll {
-    overflow-x: hidden;
-    overflow-y: scroll;
-  }
-
-  hr {
-    margin-bottom: 0;
-    margin-top: 12px;
-  }
-  .table-row{
-    margin-top: 20px;
-  }
-
-  tr:hover {
-    background-color: transparent!important;
-  }
-
   .dark-theme {
     background-color: #504455;
   }
 
-  .alert-messages {
-    padding-top: 1.2rem;
-  }
-  .start-help {
+  .footer {
+    font-size: 13px;
+    flex: none;
     color: #6F6F6F;
-  }
-
-  /*.footer {
-    color: #6F6F6F;
-
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    padding: 1rem;
+    padding: 0.5rem;
     background-color: transparent;
     text-align: center;
   }
   .bottom-links{
-    color: #000
-  }*/
+    color: #2E2E2E
+  }
 
 </style>
