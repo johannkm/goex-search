@@ -43,7 +43,7 @@
     <div class="container main-content">
 
       <div class="alert-messages">
-        <p class="start-help" v-if="begining">Search for restaurants in near a location. Goex will summarize all customer reviews.</p>
+        <p class="start-help" v-if="begining">Search for businesses near a location. Goex will summarize customer reviews.</p>
         <p v-if="noResponse">No matching results</p>
         <p v-if="noServer">Can't reach server.</p>
       </div>
@@ -51,9 +51,9 @@
       <table class="table is-striped yscroll">
         <loading-icon :active="searching" :isSmall="false"/>
 
-        <tr v-for="b in response">
+        <tr v-for="b, key in response">
           <div class="table-row">
-            <business-box :businessData="b"/>
+            <business-box :businessData="b" :key="key"/>
             <hr>
           </div>
         </tr>
@@ -61,6 +61,26 @@
 
 
     </div>
+    <!-- <footer class="footer">
+      <small>
+        <p>
+          Made with data from
+          <a class="bottom-links">
+            <span class="icon is-small">
+              <i class="fa fa-yelp"></i>
+            </span>
+            Yelp
+          </a>
+          &nbspand
+          <a class="bottom-links">
+            <span class="icon is-small">
+              <i class="fa fa-map-marker"></i>
+            </span>
+            Google Places
+          </a>
+        </p>
+      </small>
+    </footer> -->
   </div>
 </template>
 
@@ -116,7 +136,7 @@ export default {
             vm.noResponse = true
             vm.response = []
           } else {
-            vm.response = response.data.businesses.slice(0,2)
+            vm.response = response.data.businesses.slice(0,5)
           }
           vm.searching = false
         })
@@ -177,5 +197,20 @@ export default {
   .start-help {
     color: #6F6F6F;
   }
+
+  /*.footer {
+    color: #6F6F6F;
+
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding: 1rem;
+    background-color: transparent;
+    text-align: center;
+  }
+  .bottom-links{
+    color: #000
+  }*/
 
 </style>

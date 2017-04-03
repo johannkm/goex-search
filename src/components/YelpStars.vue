@@ -2,7 +2,7 @@
 
 <span>
   <img :src="ratingImg"/>
-  <small>{{total}} Reviews</small>
+  <small v-if="showTotal">{{total}} Reviews</small>
 </span>
 
 </template>
@@ -10,7 +10,18 @@
 <script>
 export default {
   name: "yelp-stars",
-  props: ['rating','total'],
+  props: {
+    rating: {
+      type: Number
+    },
+    total: {
+      type: Number
+    },
+    showTotal: {
+      type: Boolean,
+      default: true
+    }
+  },
   computed: {
     ratingImg: function(){
       let a = (''+this.rating).charAt(0), b=''
