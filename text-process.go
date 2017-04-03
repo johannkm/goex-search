@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -19,7 +20,7 @@ const (
 var TextApiClient *textapi.Client
 var Lexicons map[string]*[10]bool
 
-type WatsonResponse struct {
+type WatsonToneResponse struct {
 	DocumentTone struct {
 		ToneCategories []struct {
 			CategoryName string `json:"category_name"`
@@ -34,8 +35,10 @@ type WatsonResponse struct {
 }
 
 type SummaryResponse struct {
-	Keyword string `json:"keyword"`
-	Text    string `json:"text"`
+	Keyword          string              `json:"keyword"`
+	Text             string              `json:"text"`
+	KeywordSentiment float32             `json:"keyword_sentiment"`
+	Reviews          *GooglePlaceReviews `json:"google_place_review"`
 }
 
 func Summarize(reviews string, creds *ApiKeys) (resp *SummaryResponse, err error) {
@@ -46,7 +49,7 @@ func Summarize(reviews string, creds *ApiKeys) (resp *SummaryResponse, err error
 		if err != nil {
 			panic(err)
 		}
-		ParseLexicon()
+		// ParseLexicon()
 	}
 
 	fmt.Println("incoming review text: " + reviews)
@@ -67,14 +70,18 @@ func Summarize(reviews string, creds *ApiKeys) (resp *SummaryResponse, err error
 		summaryText = summaryText + summary.Sentences[x]
 	}
 
-	title, err := ProcessText(reviews, creds)
+	understanding, err := FindKeyword(creds, reviews)
 	if err != nil {
 		panic(err)
 	}
+
+	title := understanding.Keywords[0].Text
+	keywordSentiment := understanding.Keywords[0].Sentiment.Score
 	fmt.Println("title: " + title)
 
 	resp.Text = summaryText
 	resp.Keyword = title
+	resp.KeywordSentiment = keywordSentiment
 
 	fmt.Println("outgoing summary" + summaryText)
 	return resp, nil
@@ -82,23 +89,30 @@ func Summarize(reviews string, creds *ApiKeys) (resp *SummaryResponse, err error
 
 func ProcessText(text string, creds *ApiKeys) (string, error) {
 
-	resp, err := AnalyzeTone(creds, text)
+	resp, err := FindKeyword(creds, text)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Print("incoming tone: ")
-	fmt.Println(resp)
 
-	res, err := FindAdjective(resp, Lexicons)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("chosen word: " + res)
-	return res, nil
+	return resp.Keywords[0].Text, nil
+
+	// resp, err := AnalyzeTone(creds, text)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// fmt.Print("incoming tone: ")
+	// fmt.Println(resp)
+	//
+	// res, err := FindAdjective(resp, Lexicons)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// fmt.Println("chosen word: " + res)
+	// return res, nil
 
 }
 
-func FindAdjective(resp *WatsonResponse, lexicons map[string]*[10]bool) (string, error) {
+func FindAdjective(resp *WatsonToneResponse, lexicons map[string]*[10]bool) (string, error) {
 
 	toneIndex := make(map[string]int32)
 	toneIndex["anger"] = 0
@@ -142,13 +156,13 @@ func AdjectiveMatches(revEmotions []int32, lexiEmotios *[10]bool) bool {
 	return true
 }
 
-func AnalyzeTone(creds *ApiKeys, text string) (*WatsonResponse, error) {
+func AnalyzeTone(creds *ApiKeys, text string) (*WatsonToneResponse, error) {
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", "https://gateway.watsonplatform.net/tone-analyzer/api/v3/tone", nil)
 	if err != nil {
 		return nil, err
 	}
-	req.SetBasicAuth(creds.Watson.Username, creds.Watson.Password)
+	req.SetBasicAuth(creds.Watson.ToneAnalysis.Username, creds.Watson.ToneAnalysis.Password)
 	q := req.URL.Query()
 	q.Add("version", "2016-05-19")
 	q.Add("text", text)
@@ -165,7 +179,7 @@ func AnalyzeTone(creds *ApiKeys, text string) (*WatsonResponse, error) {
 		return nil, err
 	}
 
-	var r = new(WatsonResponse)
+	var r = new(WatsonToneResponse)
 	err = json.Unmarshal([]byte(bodyBytes), &r)
 	if err != nil {
 		panic(err)
@@ -208,6 +222,68 @@ func ParseLexicon() error {
 
 	Lexicons = wordEmos
 	return nil
+}
+
+type WatsonUnderstandRequest struct {
+	Text     string `json:"text"`
+	Features struct {
+		Keywords struct {
+			Emotion   bool  `json:"emotion"`
+			Sentiment bool  `json:"sentiment"`
+			Limit     int32 `json:"limit"`
+		} `json:"keywords"`
+	} `json:"features"`
+}
+
+type WatsonUnderstandResponse struct {
+	Keywords []struct {
+		Text      string `json:"text"`
+		Sentiment struct {
+			Score float32 `json:"score"`
+		} `json:"sentiment"`
+	} `json:"keywords"`
+}
+
+func FindKeyword(creds *ApiKeys, text string) (*WatsonUnderstandResponse, error) {
+
+	reqBody := new(WatsonUnderstandRequest)
+	reqBody.Text = text
+	reqBody.Features.Keywords.Emotion = false
+	reqBody.Features.Keywords.Sentiment = true
+	reqBody.Features.Keywords.Limit = 1
+
+	reqBodyJson, err := json.Marshal(reqBody)
+	if err != nil {
+		panic(err)
+	}
+
+	client := &http.Client{}
+	req, err := http.NewRequest("POST", "https://gateway.watsonplatform.net/natural-language-understanding/api/v1/analyze", bytes.NewBuffer(reqBodyJson))
+	if err != nil {
+		return nil, err
+	}
+	req.SetBasicAuth(creds.Watson.LanguageUnderstanding.Username, creds.Watson.LanguageUnderstanding.Password)
+	q := req.URL.Query()
+	q.Add("version", "2017-02-27")
+	req.URL.RawQuery = q.Encode()
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var r = new(WatsonUnderstandResponse)
+	err = json.Unmarshal([]byte(bodyBytes), &r)
+	if err != nil {
+		panic(err)
+	}
+	return r, err
 }
 
 // func ParseLexicon() error {

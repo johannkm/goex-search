@@ -10,7 +10,19 @@ import (
 	"fmt"
 )
 
-func SearchGoogleReviews(args *SummaryForm, conf *ApiKeys) (string, error) {
+type GooglePlaceReview struct {
+	AuthorName string `json:"author_name"`
+	AuthorURL  string `json:"author_url"`
+	Rating     int    `json:"rating"`
+	Text       string `json:"text"`
+	Time       int    `json:"time"`
+}
+
+type GooglePlaceReviews struct {
+	Reviews []*GooglePlaceReview `json:"reviews"`
+}
+
+func SearchGoogleReviews(args *SummaryForm, conf *ApiKeys) (string, *GooglePlaceReviews, error) {
 	c, err := maps.NewClient(maps.WithAPIKey(conf.GoogleMaps.Key))
 	if err != nil {
 		log.Fatalf("fatal error: %s", err)
@@ -44,14 +56,26 @@ func SearchGoogleReviews(args *SummaryForm, conf *ApiKeys) (string, error) {
 			panic(err)
 		}
 
+		gReviews := new(GooglePlaceReviews)
+
+		for x := range details.Reviews {
+			gReview := new(GooglePlaceReview)
+			gReview.AuthorName = details.Reviews[x].AuthorName
+			gReview.AuthorURL = details.Reviews[x].AuthorURL
+			gReview.Rating = details.Reviews[x].Rating
+			gReview.Text = details.Reviews[x].Text
+			gReview.Time = details.Reviews[x].Time
+			gReviews.Reviews = append(gReviews.Reviews, gReview)
+		}
+
 		reviews := ""
 		for x := range details.Reviews {
 			reviews += details.Reviews[x].Text + " . "
 		}
-		return reviews, nil
+		return reviews, gReviews, nil
 
 	}
-	return "", err
+	return "", nil, err
 }
 
 func RunTraining(conf *ApiKeys) {

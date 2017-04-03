@@ -24,8 +24,14 @@ type ApiKeys struct {
 		Key string `json:"key"`
 	} `json:"paralleldots"`
 	Watson struct {
-		Username string `json: password`
-		Password string `json:"password"`
+		ToneAnalysis struct {
+			Username string `json: password`
+			Password string `json:"password"`
+		} `json:"tone_analysis"`
+		LanguageUnderstanding struct {
+			Username string `json: password`
+			Password string `json:"password"`
+		} `json:"language_understanding"`
 	} `json:"watson"`
 	TextApi struct {
 		AppId string `json:"app_id"`

@@ -67,7 +67,7 @@ func postSummary(c echo.Context) (err error) {
 
 	fmt.Println(u)
 
-	text, err := SearchGoogleReviews(u, apiKeys)
+	text, gReviews, err := SearchGoogleReviews(u, apiKeys)
 	if err != nil {
 		panic(err)
 	}
@@ -88,6 +88,8 @@ func postSummary(c echo.Context) (err error) {
 	if err != nil {
 		panic(err)
 	}
+
+	res.Reviews = gReviews
 
 	out, err := json.Marshal(res)
 	if err != nil {

@@ -37,6 +37,7 @@ type Business struct {
 			Overnight bool   `json:"is_overnight"`
 		} `json:"open"`
 	} `json:"hours"`
+	IsClosed   bool `json:"is_closed"`
 	Categories []struct {
 		Alias string `json:"alias"`
 		Title string `json:"title"`
