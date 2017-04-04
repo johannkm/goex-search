@@ -92,7 +92,7 @@ export default{
       this.reviews = []
       this.summaryLoading = true
       var vm = this
-      axios.post("http://localhost:8000/summary",{ // TODO: remove for production
+      axios.post("/summary",{
         name: data.name,
         latitude: data.coordinates.latitude,
         longitude: data.coordinates.longitude

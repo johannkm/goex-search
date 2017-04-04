@@ -119,7 +119,7 @@ export default {
       }
       console.log(location)
       var vm = this
-      axios.post("http://localhost:8000/places",{ // TODO: remove for production
+      axios.post("/places",{
         term: vm.term,
         location: location,
         limit: '5'

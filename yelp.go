@@ -8,7 +8,7 @@ import (
 	"net/url"
 )
 
-const (
+const ( // yelp parameters
 	Token_Url   = "https://api.yelp.com/oauth2/token"
 	Post_Format = "application/x-www-form-urlencoded"
 )
@@ -70,7 +70,7 @@ type YelpReviewSearchResp struct {
 	} `json:"reviews"`
 }
 
-func GetApiToken(conf *ApiKeys) (*ApiToken, error) {
+func GetApiToken(conf *ApiKeys) (*ApiToken, error) { // get credentials
 
 	form := url.Values{}
 	form.Add("grant_type", "client_credentials")
@@ -85,7 +85,7 @@ func GetApiToken(conf *ApiKeys) (*ApiToken, error) {
 	return cred, err
 }
 
-func PostId(url string, format string, args string) ([]byte, error) {
+func PostId(url string, format string, args string) ([]byte, error) { // send api secret
 
 	argsBytes := bytes.NewBuffer([]byte(args))
 	resp, err := http.Post(url, format, argsBytes)
@@ -100,7 +100,7 @@ func PostId(url string, format string, args string) ([]byte, error) {
 	return []byte(bodyBytes), err
 }
 
-func ParseApiToken(body []byte) (*ApiToken, error) {
+func ParseApiToken(body []byte) (*ApiToken, error) { // retreive token
 
 	var c = new(ApiToken)
 	err := json.Unmarshal(body, &c)
@@ -108,7 +108,7 @@ func ParseApiToken(body []byte) (*ApiToken, error) {
 	return c, err
 }
 
-func MakeGet(url string, cred *ApiToken) (*http.Response, error) {
+func MakeGet(url string, cred *ApiToken) (*http.Response, error) { // http get request
 
 	auth := cred.TokenType + " " + cred.AccessToken
 
@@ -124,7 +124,7 @@ func MakeGet(url string, cred *ApiToken) (*http.Response, error) {
 
 }
 
-func YelpSearch(args string, cred *ApiToken) (*YelpSearchResp, error) {
+func YelpSearch(args string, cred *ApiToken) (*YelpSearchResp, error) { // yelp business search
 
 	addr := "https://api.yelp.com/v3/businesses/search" + "?" + args
 	resp, err := MakeGet(addr, cred)
@@ -143,7 +143,7 @@ func YelpSearch(args string, cred *ApiToken) (*YelpSearchResp, error) {
 
 }
 
-func YelpReviewSearch(id string, cred *ApiToken) (*YelpReviewSearchResp, error) {
+func YelpReviewSearch(id string, cred *ApiToken) (*YelpReviewSearchResp, error) { // yelp review search
 	addr := "https://api.yelp.com/v3/businesses/" + id + "/reviews"
 
 	resp, err := MakeGet(addr, cred)

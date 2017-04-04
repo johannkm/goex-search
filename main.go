@@ -5,14 +5,14 @@ import (
 	"io/ioutil"
 )
 
-var yelpToken *ApiToken
+var yelpToken *ApiToken // yelp authenticator
 var apiKeys *ApiKeys
 
 const (
-	Conf_Path = "api-config.json"
+	Conf_Path = "api-config.json" // path to api key file
 )
 
-type ApiKeys struct {
+type ApiKeys struct { // hold api credentials
 	Yelp struct {
 		Id     string `json:"client_id"`
 		Secret string `json:"client_secret"`
@@ -20,9 +20,6 @@ type ApiKeys struct {
 	GoogleMaps struct {
 		Key string `json:"key"`
 	} `json:"google-maps"`
-	ParallelDots struct {
-		Key string `json:"key"`
-	} `json:"paralleldots"`
 	Watson struct {
 		ToneAnalysis struct {
 			Username string `json: password`
@@ -41,24 +38,22 @@ type ApiKeys struct {
 
 func main() {
 
-	conf, err := ReadConfigFile(Conf_Path)
+	conf, err := ReadConfigFile(Conf_Path) // parse api key file
 	if err != nil {
 		panic(err)
 	}
 	apiKeys = conf
 
-	yelpToken, err = GetApiToken(conf)
+	yelpToken, err = GetApiToken(conf) // get yelp authenticator
 	if err != nil {
 		panic(err)
 	}
 
-	Serve()
-	// RunTraining( conf )
-	// ProcessText(conf)
+	Serve() // start server
 
 }
 
-func ReadConfigFile(path string) (*ApiKeys, error) {
+func ReadConfigFile(path string) (*ApiKeys, error) { // parse api keys from json
 
 	configFile, err := ioutil.ReadFile(path)
 	if err != nil {
