@@ -13,7 +13,7 @@ import (
 type SearchForm struct { // general search request from spa
 	Term     string `json:"term"`
 	Location string `json:"location"`
-	Limit string `json:"limit"`
+	Limit    string `json:"limit"`
 }
 
 type SummaryForm struct { // place summary request from spa
@@ -33,7 +33,7 @@ func Serve() {
 
 	// e.Use(middleware.CORS()) // TODO: remove for production
 
-	e.Logger.Fatal(e.Start(":"+os.Getenv("PORT")))
+	e.Logger.Fatal(e.Start(":" + os.Getenv("PORT")))
 }
 
 func postPlaces(c echo.Context) (err error) { // respond to place search post

@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	textapi "github.com/AYLIEN/aylien_textapi_go"
 	"io/ioutil"
 	"net/http"
-	textapi "github.com/AYLIEN/aylien_textapi_go"
 )
 
 var TextApiClient *textapi.Client
@@ -58,7 +58,7 @@ func Summarize(reviews string, creds *ApiKeys) (resp *SummaryResponse, err error
 		auth := textapi.Auth{creds.TextApi.AppId, creds.TextApi.Key}
 		TextApiClient, err = textapi.NewClient(auth, true)
 		if err != nil {
-			panic(err)
+			fmt.Println(err)
 		}
 	}
 
@@ -71,7 +71,7 @@ func Summarize(reviews string, creds *ApiKeys) (resp *SummaryResponse, err error
 	}
 	summary, err := TextApiClient.Summarize(summarizeParams)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 	fmt.Printf("%v\n", TextApiClient.RateLimits)
 
@@ -83,7 +83,7 @@ func Summarize(reviews string, creds *ApiKeys) (resp *SummaryResponse, err error
 
 	understanding, err := FindKeyword(creds, reviews)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 
 	title := understanding.Keywords[0].Text
@@ -124,7 +124,7 @@ func AnalyzeTone(creds *ApiKeys, text string) (*WatsonToneResponse, error) {
 	var r = new(WatsonToneResponse)
 	err = json.Unmarshal([]byte(bodyBytes), &r)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 	return r, err
 }
@@ -139,7 +139,7 @@ func FindKeyword(creds *ApiKeys, text string) (*WatsonUnderstandResponse, error)
 
 	reqBodyJson, err := json.Marshal(reqBody)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 
 	client := &http.Client{}
@@ -166,7 +166,7 @@ func FindKeyword(creds *ApiKeys, text string) (*WatsonUnderstandResponse, error)
 	var r = new(WatsonUnderstandResponse)
 	err = json.Unmarshal([]byte(bodyBytes), &r)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 	return r, err
 }

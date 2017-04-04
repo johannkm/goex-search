@@ -1,9 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"golang.org/x/net/context"
 	"googlemaps.github.io/maps"
-	"fmt"
 )
 
 type GooglePlaceReview struct {
