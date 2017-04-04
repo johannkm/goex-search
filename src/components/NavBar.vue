@@ -1,7 +1,10 @@
 <template>
   <nav class="nav dark-theme">
     <div class="nav-left">
-      <a class="nav-item title" href="#">
+      <!-- <router-link to="/" exact class="nav-item title">
+        Goex
+      </router-link> -->
+      <a href="/" class="nav-item title">
         Goex
       </a>
     </div>
@@ -14,10 +17,13 @@
 
     <div class="nav-right nav-menu" :class="{ 'is-active' : toggled }">
       <a class="nav-item" href="/">
+        About
+      </a>
+      <a class="nav-item" href="/">
         <span class="icon">
           <i class="fa fa-github"></i>
         </span>
-        View on Github
+        Github
       </a>
     </div>
 
@@ -47,15 +53,21 @@ export default {
 }
 
 .nav-item{
-  padding: 0;
+  /*padding-top: 0;
+  padding-bottom: 0;*/
   color: #fff;
   font-size: 1rem;
-  font-weight: 500;
+  /*font-weight: 500;*/
   line-height: 1.2rem;
 }
 .nav-item:hover {
   color: #fff;
+  z-index: 10!important;
 }
+.nav-item:active {
+  color: #fff!important;
+}
+
 .title{
   text-transform: uppercase;
   font-weight: 600;
@@ -72,8 +84,11 @@ export default {
   background-color: #504455;
 }
 
-.nav-menu {
-  background-color: #504455
+.nav-menu.is-active {
+  background-color: #504455;
+}
+.nav-menu.nav-right {
+  z-index: 10;
 }
 
 </style>

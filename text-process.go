@@ -57,6 +57,7 @@ func Summarize(reviews string, creds *ApiKeys) (resp *SummaryResponse, err error
 		Title:             "Review",
 		Text:              reviews,
 		NumberOfSentences: 1,
+		Mode:              "short",
 	}
 	summary, err := TextApiClient.Summarize(summarizeParams)
 	if err != nil {

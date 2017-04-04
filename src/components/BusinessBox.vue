@@ -42,7 +42,7 @@
 
     <div v-if="reviewsExpanded">
       <hr>
-      <review-box class="reviews" v-for="b in reviews" :review="b" />
+      <review-box class="reviews" v-for="b,index in reviews" :review="b" :key="index"/>
     </div>
 
   </div>

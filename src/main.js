@@ -8,7 +8,7 @@ Vue.use(VueScrollTo)
 Vue.use(Router)
 
 const routes = [
-  { path: '/', component: SearchForm }
+  { name: 'search', path: '/', component: SearchForm }
 ]
 
 const router = new Router({

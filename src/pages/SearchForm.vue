@@ -8,8 +8,8 @@
             <div class="columns is-gapless">
               <div class="column">
                 <p class="control has-icon">
-                  <input class="input" type="input" placeholder="Search (Optional)" v-model="$route.params.search">
-                  <span class="icon is-small">
+                  <input class="input" type="input" placeholder="Search (Optional)" v-model="term">
+                  <span class="icon is-small form-icon">
                     <i class="fa fa-search"></i>
                   </span>
                 </p>
@@ -17,7 +17,7 @@
               <div class="column">
                 <p class="control has-icon">
                   <input class="input" type="input" placeholder="Place" v-model="location" required>
-                  <span class="icon is-small">
+                  <span class="icon is-small form-icon">
                     <i class="fa fa-location-arrow"></i>
                   </span>
                 </p>
@@ -100,10 +100,14 @@ export default {
   },
   methods: {
     postSearch: function() {
+      this.$router.push({
+         query: { term: this.term, location: this.location }
+       })
       this.begining = false
       this.noResponse = false
       this.searching = true
       this.noServer = false
+      this.expandedReview = -1
       this.response = []
       let location = this.location
       if(this.location == 'Current location'){
@@ -117,7 +121,8 @@ export default {
       var vm = this
       axios.post("http://localhost:8000/places",{ // TODO: remove for production
         term: vm.term,
-        location: location
+        location: location,
+        limit: '5'
       })
         .then(function(response){
           console.log(response.data)
@@ -125,7 +130,7 @@ export default {
             vm.noResponse = true
             vm.response = []
           } else {
-            vm.response = response.data.businesses.slice(0,5)
+            vm.response = response.data.businesses
           }
           vm.searching = false
         })
@@ -148,6 +153,24 @@ export default {
     },
     shouldBeExpanded: function(index){
       return this.expandedReview == index
+    }
+  },
+  mounted: function(){
+    console.log('mounted')
+    let newQuery = this.$route.query
+    if(newQuery.term) this.term = newQuery.term
+    if(newQuery.location) this.location = newQuery.location
+  },
+  watch: {
+    '$route': function(newRoute){
+      console.log('route watcher')
+      this.term = ''
+      this.location = 'Current location'
+      let newQuery = newRoute.query
+      this.response = []
+      console.log(newQuery)
+      if(newQuery.term) this.term = newQuery.term
+      if(newQuery.location) this.location = newQuery.location
     }
   }
 }
@@ -191,6 +214,9 @@ export default {
   }
   .start-help {
     color: #6F6F6F;
+  }
+  .control.has-icon{
+    z-index: 0!important;
   }
 
 </style>

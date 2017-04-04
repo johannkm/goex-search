@@ -2,7 +2,7 @@
   <div id="app">
 
     <div class="content-except-footer">
-      
+
       <div class="dark-theme">
         <div class="container main-content">
           <nav-bar/>

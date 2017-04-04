@@ -12,6 +12,7 @@ import (
 type SearchForm struct {
 	Term     string `json:"term"`
 	Location string `json:"location"`
+	Limit string `json:"limit"`
 }
 
 type SummaryForm struct {
@@ -45,6 +46,7 @@ func postPlaces(c echo.Context) (err error) {
 	form := url.Values{}
 	form.Add("location", u.Location)
 	form.Add("term", u.Term)
+	form.Add("limit", u.Limit)
 
 	res, err := YelpSearch(form.Encode(), yelpToken)
 	if err != nil {
