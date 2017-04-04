@@ -2,6 +2,8 @@
 
 A Yelp search app that summarizes reviews using Watson and Aylien Text API
 
+[Demo](http://ter.ps/goex)
+
 ## Install
 
 Install [golang](https://golang.org/doc/install) and set your [gopath](https://github.com/golang/go/wiki/GOPATH).
@@ -12,14 +14,16 @@ Get api keys for:
 - [watson language understanding](https://www.ibm.com/watson/developercloud/natural-language-understanding.html)
 - [aylien text analysis](http://aylien.com/text-api)
 
-Set your api credentials in `api-config.json`
-
 ``` bash
 cd $GOPATH/src/
 git clone https://github.com/johannkm/goex-search.git
 
 cd goex-search/
+```
 
+Set your api credentials in `api-config.json`
+
+``` bash
 npm install
 npm run build
 
@@ -29,3 +33,9 @@ go install
 PORT=8000 $GOPATH/bin/goex-search
 # running at http://localhost:8000
 ```
+
+## Built With
+- Golang
+- Echo
+- Vue.js
+- Bulma
