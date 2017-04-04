@@ -16,10 +16,7 @@
     </span>
 
     <div class="nav-right nav-menu" :class="{ 'is-active' : toggled }">
-      <a class="nav-item" href="/">
-        About
-      </a>
-      <a class="nav-item" href="/">
+      <a class="nav-item" href="https://github.com/johannkm/goex-search">
         <span class="icon">
           <i class="fa fa-github"></i>
         </span>

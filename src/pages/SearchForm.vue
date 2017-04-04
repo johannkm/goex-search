@@ -3,12 +3,12 @@
 
     <div class="content-form">
       <div class="container main-content">
-        <form class="search-form" v-on:submit.prevent="postSearch">
+        <form class="search-form" v-on:submit.prevent="postSearch" :disabled="gettingLocation">
           <div class="field">
             <div class="columns is-gapless">
               <div class="column">
                 <p class="control has-icon">
-                  <input class="input" type="input" placeholder="Search (Optional)" v-model="term">
+                  <input class="input" type="input" placeholder="Search (Optional)" v-model="term" :disabled="gettingLocation">
                   <span class="icon is-small form-icon">
                     <i class="fa fa-search"></i>
                   </span>
@@ -16,7 +16,7 @@
               </div>
               <div class="column">
                 <p class="control has-icon">
-                  <input class="input" type="input" placeholder="Place" v-model="location" required>
+                  <input class="input" type="input" placeholder="Place" v-model="location" required :disabled="gettingLocation">
                   <span class="icon is-small form-icon">
                     <i class="fa fa-location-arrow"></i>
                   </span>
@@ -24,7 +24,7 @@
               </div>
               <div class="column is-narrow">
                 <p class="control">
-                  <button type="submit" class="button is-primary" :class="{'is-loading': searching}">Go</button>
+                  <button type="submit" class="button is-primary" :class="{'is-loading': searching}" :disabled="gettingLocation">Go</button>
 
                 </p>
               </div>
@@ -40,6 +40,7 @@
         <p class="start-help" v-if="begining">Search for businesses near a location. Goex will summarize customer reviews.</p>
         <p v-if="noResponse">No matching results</p>
         <p v-if="noServer">Can't reach server.</p>
+        <p v-if="gettingLocation">Getting location...</p>
       </div>
 
       <table class="table is-striped yscroll">
@@ -89,13 +90,15 @@ export default {
   data () {
     return {
       term: '',
-      location: 'DC',
+      location: 'Current location',
       response: [],
       noResponse: false,
       searching: false,
       begining: true,
       noServer: false,
-      expandedReview: -1
+      expandedReview: -1,
+      currentLocation: '',
+      gettingLocation: false
     }
   },
   methods: {
@@ -110,12 +113,8 @@ export default {
       this.expandedReview = -1
       this.response = []
       let location = this.location
-      if(this.location == 'Current location'){
-        if(navigator.geolocation){
-          let pos = navigator.geolocation.getCurrentPosition((pos) => {
-            location = pos.coords.latitude+','+pos.coords.longitude
-          })
-        }
+      if(this.location.toLowerCase().trim() == 'current location'){
+        location = this.currentLocation;
       }
       console.log(location)
       var vm = this
@@ -157,9 +156,28 @@ export default {
   },
   mounted: function(){
     console.log('mounted')
+    let vm = this
     let newQuery = this.$route.query
     if(newQuery.term) this.term = newQuery.term
     if(newQuery.location) this.location = newQuery.location
+    if(this.currentLocation==''){
+      if(navigator.geolocation){
+        vm.gettingLocation = true
+        vm.begining = false
+        vm.searching = true
+        let pos = navigator.geolocation.getCurrentPosition( function(pos){
+          vm.currentLocation = pos.coords.latitude+','+pos.coords.longitude
+          vm.gettingLocation = false
+          vm.begining = true
+          vm.searching = false
+        }, function(err){
+          vm.gettingLocation = false
+          vm.location = ''
+          vm.begining = true
+          vm.searching = false
+        })
+      }
+    }
   },
   watch: {
     '$route': function(newRoute){
