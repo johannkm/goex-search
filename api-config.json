@@ -1,0 +1,19 @@
+{
+	"yelp": {
+		"client_id": "<your id>",
+		"client_secret": "<your secret>"
+	},
+	"google-maps": {
+		"key": "<your key>"
+	},
+	"watson": {
+		"language_understanding": {
+			"username": "<your username>",
+			"password": "<your password>"
+		}
+	},
+	"text-analysis": {
+		"app_id": "<your id>",
+		"key": "<your key>"
+	}
+}
